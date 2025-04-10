@@ -1,5 +1,5 @@
 [build]
-  command = "npm install --legacy-peer-deps && npm run build"
+  command = "npm cache clean --force && npm install --force && npm run build"
   publish = ".next"
 
 [[plugins]]
@@ -7,4 +7,5 @@
 
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
-  NODE_VERSION = "20.11.1" 
+  NODE_VERSION = "18.17.0"
+  NPM_FLAGS = "--legacy-peer-deps --no-audit --no-fund" 
