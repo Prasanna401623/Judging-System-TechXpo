@@ -9,6 +9,7 @@
   NEXT_USE_NETLIFY_EDGE = "true"
   NODE_VERSION = "18.17.0"
   NPM_FLAGS = "--legacy-peer-deps"
+  NEXT_TELEMETRY_DISABLED = "1"
 
 [[headers]]
   for = "/*"
