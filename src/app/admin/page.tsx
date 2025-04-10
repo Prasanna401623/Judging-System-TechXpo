@@ -1,0 +1,285 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { ref, onValue, push, remove, get } from 'firebase/database';
+import { Toaster, toast } from 'sonner';
+import { db } from '@/lib/firebase';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
+import { Navigation } from '@/components/Navigation';
+import { AdminLoginForm } from '@/components/AdminLoginForm';
+import { useAdmin } from '@/hooks/useAdmin';
+import type { Submission } from '@/types';
+import { CRITERIA, MAX_SCORES } from '@/types';
+
+interface TeamScores {
+  [teamName: string]: {
+    totalScore: number;
+    averageScore: number;
+    judgeCount: number;
+    scores: {
+      Presentation: number;
+      UI: number;
+      Features: number;
+      Impact: number;
+      Technical: number;
+      AI: number;
+    };
+  };
+}
+
+interface Team {
+  id: string;
+  name: string;
+}
+
+export default function AdminPage() {
+  const { isAdmin, isLoading, login } = useAdmin();
+  const [newTeamName, setNewTeamName] = useState('');
+  const [teams, setTeams] = useState<Team[]>([]);
+  const [teamScores, setTeamScores] = useState<TeamScores>({});
+
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    // Listen for teams
+    const teamsRef = ref(db, 'teams');
+    const unsubscribeTeams = onValue(teamsRef, (snapshot) => {
+      const teamsData = snapshot.val();
+      if (teamsData) {
+        const teamsArray = Object.entries(teamsData).map(([id, name]) => ({
+          id,
+          name: String(name)
+        }));
+        setTeams(teamsArray);
+      } else {
+        setTeams([]);
+      }
+    });
+
+    // Listen for submissions
+    const submissionsRef = ref(db, 'submissions');
+    const unsubscribeSubmissions = onValue(submissionsRef, (snapshot) => {
+      const submissionsData = snapshot.val() || {};
+
+      // Calculate scores
+      const scores: TeamScores = {};
+      Object.values(submissionsData).forEach((submission) => {
+        const { teamName, scores: submissionScores } = submission as Submission;
+        if (!scores[teamName]) {
+          scores[teamName] = {
+            totalScore: 0,
+            averageScore: 0,
+            judgeCount: 0,
+            scores: { Presentation: 0, UI: 0, Features: 0, Impact: 0, Technical: 0, AI: 0 },
+          };
+        }
+
+        scores[teamName].judgeCount++;
+        scores[teamName].scores.Presentation += submissionScores.Presentation;
+        scores[teamName].scores.UI += submissionScores.UI;
+        scores[teamName].scores.Features += submissionScores.Features;
+        scores[teamName].scores.Impact += submissionScores.Impact;
+        scores[teamName].scores.Technical += submissionScores.Technical;
+        scores[teamName].scores.AI += submissionScores.AI;
+
+        const total = 
+          submissionScores.Presentation + 
+          submissionScores.UI + 
+          submissionScores.Features + 
+          submissionScores.Impact + 
+          submissionScores.Technical + 
+          submissionScores.AI;
+        scores[teamName].totalScore += total;
+      });
+
+      // Calculate average scores after all submissions are processed
+      Object.keys(scores).forEach((teamName) => {
+        const teamScore = scores[teamName];
+        teamScore.averageScore = teamScore.totalScore / teamScore.judgeCount;
+      });
+
+      setTeamScores(scores);
+    });
+
+    return () => {
+      unsubscribeTeams();
+      unsubscribeSubmissions();
+    };
+  }, [isAdmin]);
+
+  const handleAddTeam = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTeamName.trim() || !isAdmin) return;
+
+    try {
+      // Check if team name already exists
+      const teamExists = teams.some(team => team.name.toLowerCase() === newTeamName.trim().toLowerCase());
+      if (teamExists) {
+        toast.error('Team name already exists');
+        return;
+      }
+
+      // Create a new team reference and set the team name
+      const teamsRef = ref(db, 'teams');
+      await push(teamsRef, newTeamName.trim());
+      
+      setNewTeamName('');
+      toast.success('Team added successfully!');
+    } catch (error: Error | unknown) {
+      console.error('Error adding team:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to add team';
+      toast.error(errorMessage);
+    }
+  };
+
+  const handleRemoveTeam = async (teamId: string, teamName: string) => {
+    if (!isAdmin) return;
+
+    try {
+      // Check if team has any submissions
+      const submissionsRef = ref(db, 'submissions');
+      const submissionsSnapshot = await get(submissionsRef);
+      const submissions = submissionsSnapshot.val() || {};
+      
+      const hasSubmissions = Object.values(submissions).some(
+        (submission: unknown) => (submission as Submission).teamName === teamName
+      );
+
+      if (hasSubmissions) {
+        toast.error('Cannot remove team with existing submissions');
+        return;
+      }
+
+      await remove(ref(db, `teams/${teamId}`));
+      toast.success('Team removed successfully!');
+    } catch (error: Error | unknown) {
+      console.error('Error removing team:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to remove team';
+      if (errorMessage.includes('PERMISSION_DENIED')) {
+        toast.error('Permission denied. Please make sure you are logged in as admin.');
+      } else {
+        toast.error(errorMessage);
+      }
+    }
+  };
+
+  if (isLoading) {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
+
+  if (!isAdmin) {
+    return (
+      <main className="min-h-screen p-4 bg-gray-50">
+        <Navigation />
+        <Toaster position="top-center" />
+        <AdminLoginForm onLogin={login} />
+      </main>
+    );
+  }
+
+  return (
+    <main className="min-h-screen p-4 bg-gray-50">
+      <Navigation />
+      <Toaster position="top-center" />
+      
+      {/* Team Management */}
+      <Card className="mb-8 mt-16">
+        <CardHeader>
+          <CardTitle>Team Management</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleAddTeam} className="flex gap-4 mb-6">
+            <Input
+              type="text"
+              placeholder="Enter team name"
+              value={newTeamName}
+              onChange={(e) => setNewTeamName(e.target.value)}
+              className="flex-1"
+            />
+            <Button type="submit" disabled={!newTeamName.trim()}>
+              Add Team
+            </Button>
+          </form>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {teams.map((team) => (
+              <div key={team.id} className="flex items-center justify-between p-3 bg-white rounded-lg shadow">
+                <span>{team.name}</span>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => handleRemoveTeam(team.id, team.name)}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Live Scores */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Live Scores</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-6">
+            {teams.map((team) => {
+              const scoreData = teamScores[team.name] || {
+                averageScore: 0,
+                judgeCount: 0,
+                scores: {
+                  Presentation: 0,
+                  UI: 0,
+                  Features: 0,
+                  Impact: 0,
+                  Technical: 0,
+                  AI: 0,
+                },
+              };
+
+              const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
+
+              return (
+                <div key={team.id} className="bg-white p-6 rounded-lg shadow">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-semibold">{team.name}</h3>
+                    <div className="text-sm text-gray-500">
+                      {scoreData.judgeCount} judge{scoreData.judgeCount !== 1 ? 's' : ''}
+                    </div>
+                  </div>
+                  <div className="grid gap-2">
+                    {Object.entries(CRITERIA).map(([key, label]) => {
+                      const score = scoreData.scores[key as keyof typeof scoreData.scores];
+                      const maxScore = MAX_SCORES[key as keyof typeof MAX_SCORES];
+                      const averageScore = score / (scoreData.judgeCount || 1);
+                      
+                      return (
+                        <div key={key} className="flex justify-between items-center">
+                          <span className="text-sm">{label}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{averageScore.toFixed(1)}</span>
+                            <span className="text-sm text-gray-500">/ {maxScore}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                    <div className="flex justify-between font-semibold mt-2 pt-2 border-t">
+                      <span>Average Total Score:</span>
+                      <div className="flex items-center gap-2">
+                        <span>{scoreData.averageScore.toFixed(2)}</span>
+                        <span className="text-sm text-gray-500">/ {maxTotalScore}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+    </main>
+  );
+} 

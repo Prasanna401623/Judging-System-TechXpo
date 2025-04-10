@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hawkathon Judging System
 
-## Getting Started
+A web-based judging system for hackathon events, built with Next.js, TailwindCSS, and Firebase Realtime Database.
 
-First, run the development server:
+## Features
 
+- Judge identification with local storage persistence
+- Team selection from a dropdown
+- Scoring based on multiple criteria (Innovation, UI/UX, Technical Complexity)
+- Duplicate submission prevention
+- Real-time data storage with Firebase
+- Responsive design optimized for tablets
+
+## Prerequisites
+
+- Node.js 18.x or later
+- npm 9.x or later
+- Firebase project with Realtime Database enabled
+
+## Setup
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd hawkathon-judging
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Create a `.env.local` file in the root directory with your Firebase configuration:
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+NEXT_PUBLIC_FIREBASE_DATABASE_URL=your_database_url
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Start the development server:
+```bash
+npm run dev
+```
 
-## Learn More
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-To learn more about Next.js, take a look at the following resources:
+## Usage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Enter your name when first accessing the application
+2. Select a team from the dropdown
+3. Score the team on various criteria (0-10)
+4. Submit the scores
+5. Repeat for other teams
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Firebase Database Structure
 
-## Deploy on Vercel
+```json
+{
+  "submissions": {
+    "$submissionId": {
+      "judgeName": "string",
+      "teamName": "string",
+      "scores": {
+        "Innovation": number,
+        "UI_UX": number,
+        "Technical": number
+      },
+      "timestamp": number
+    }
+  }
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Development
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Built with Next.js 14
+- Styled with TailwindCSS and ShadCN UI
+- Form handling with React Hook Form and Zod
+- Real-time database with Firebase
+
+## License
+
+MIT

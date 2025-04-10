@@ -1,0 +1,13 @@
+{
+  "rules": {
+    "submissions": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["judgeName"]
+    },
+    "teams": {
+      ".read": true,
+      ".write": true
+    }
+  }
+} 
