@@ -8,4 +8,20 @@
 [build.environment]
   NEXT_USE_NETLIFY_EDGE = "true"
   NODE_VERSION = "18.17.0"
-  NPM_CONFIG_LEGACY_PEER_DEPS = "true" 
+  NPM_CONFIG_LEGACY_PEER_DEPS = "true"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[redirects]]
+  from = "/*"
+  to = "/_next/static/:splat"
+  status = 200
+  force = true
+  conditions = {Path = "/_next/static/*"} 
