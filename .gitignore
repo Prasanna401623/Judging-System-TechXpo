@@ -9,7 +9,7 @@
 /coverage
 
 # next.js
-# /.next/ # Commenting out to allow Netlify to access build files
+/.next/ 
 /out/
 
 # production
