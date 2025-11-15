@@ -127,8 +127,8 @@ export default function Home() {
         <div className="flex flex-col items-center">
           <div className="w-64 h-64 relative mb-8 mt-8">
             <Image
-              src="/assets/hawkathon logo.jpeg"
-              alt="Hawkathon Logo"
+              src="/assets/TechXpo.png"
+              alt="TechXpo Logo"
               fill
               style={{ objectFit: 'contain' }}
               priority
