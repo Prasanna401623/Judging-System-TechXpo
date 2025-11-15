@@ -106,6 +106,9 @@ export default function Home() {
         await push(submissionsRef, submission);
         toast.success('Scores submitted successfully!');
       }
+      
+      // Clear existing submission state after successful submission
+      setExistingSubmission(null);
     } catch (error) {
       console.error('Error submitting scores:', error);
       toast.error('Failed to submit scores. Please try again.');
