@@ -20,12 +20,12 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
   return (
     <Card className="w-[90%] max-w-md mx-auto mt-8">
       <CardHeader>
-        <CardTitle>Welcome to Hawkathon Judging</CardTitle>
+        <CardTitle>Welcome to TechXpo 2025 Judging</CardTitle>
         <CardDescription>Please enter your name to begin judging</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
         <CardContent>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <Input
               type="text"
               placeholder="Enter your name"
@@ -36,7 +36,7 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
             />
           </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="pt-6">
           <Button type="submit" className="w-full h-12 text-lg" disabled={!name.trim()}>
             Start Judging
           </Button>
