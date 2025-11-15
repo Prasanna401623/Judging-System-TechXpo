@@ -19,12 +19,12 @@ interface TeamScores {
     averageScore: number;
     judgeCount: number;
     scores: {
-      Presentation: number;
-      UI: number;
-      Features: number;
+      Innovation: number;
+      TechnicalComplexity: number;
+      Functionality: number;
+      UXDesign: number;
       Impact: number;
-      Technical: number;
-      AI: number;
+      Presentation: number;
     };
   };
 }
@@ -72,25 +72,25 @@ export default function AdminPage() {
             totalScore: 0,
             averageScore: 0,
             judgeCount: 0,
-            scores: { Presentation: 0, UI: 0, Features: 0, Impact: 0, Technical: 0, AI: 0 },
+            scores: { Innovation: 0, TechnicalComplexity: 0, Functionality: 0, UXDesign: 0, Impact: 0, Presentation: 0 },
           };
         }
 
         scores[teamName].judgeCount++;
-        scores[teamName].scores.Presentation += submissionScores.Presentation;
-        scores[teamName].scores.UI += submissionScores.UI;
-        scores[teamName].scores.Features += submissionScores.Features;
+        scores[teamName].scores.Innovation += submissionScores.Innovation;
+        scores[teamName].scores.TechnicalComplexity += submissionScores.TechnicalComplexity;
+        scores[teamName].scores.Functionality += submissionScores.Functionality;
+        scores[teamName].scores.UXDesign += submissionScores.UXDesign;
         scores[teamName].scores.Impact += submissionScores.Impact;
-        scores[teamName].scores.Technical += submissionScores.Technical;
-        scores[teamName].scores.AI += submissionScores.AI;
+        scores[teamName].scores.Presentation += submissionScores.Presentation;
 
         const total = 
-          submissionScores.Presentation + 
-          submissionScores.UI + 
-          submissionScores.Features + 
+          submissionScores.Innovation + 
+          submissionScores.TechnicalComplexity + 
+          submissionScores.Functionality + 
+          submissionScores.UXDesign + 
           submissionScores.Impact + 
-          submissionScores.Technical + 
-          submissionScores.AI;
+          submissionScores.Presentation;
         scores[teamName].totalScore += total;
       });
 

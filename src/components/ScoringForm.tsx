@@ -11,12 +11,12 @@ import { CRITERIA, MAX_SCORES, type JudgingFormData } from '@/types';
 
 const formSchema = z.object({
   teamName: z.string().min(1, 'Please select a team'),
-  Innovation: z.coerce.number().min(0).max(20, 'Maximum score is 20'),
-  TechnicalComplexity: z.coerce.number().min(0).max(20, 'Maximum score is 20'),
-  Functionality: z.coerce.number().min(0).max(20, 'Maximum score is 20'),
-  UXDesign: z.coerce.number().min(0).max(15, 'Maximum score is 15'),
-  Impact: z.coerce.number().min(0).max(15, 'Maximum score is 15'),
-  Presentation: z.coerce.number().min(0).max(10, 'Maximum score is 10'),
+  Innovation: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  TechnicalComplexity: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  Functionality: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  UXDesign: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(15, 'Maximum score is 15'),
+  Impact: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(15, 'Maximum score is 15'),
+  Presentation: z.number({ required_error: 'Score is required' }).min(0, 'Minimum score is 0').max(10, 'Maximum score is 10'),
 });
 
 interface ScoringFormProps {
@@ -32,13 +32,13 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
     resolver: zodResolver(formSchema),
     defaultValues: {
       teamName: '',
-      Innovation: 0,
-      TechnicalComplexity: 0,
-      Functionality: 0,
-      UXDesign: 0,
-      Impact: 0,
-      Presentation: 0,
-    },
+      Innovation: undefined,
+      TechnicalComplexity: undefined,
+      Functionality: undefined,
+      UXDesign: undefined,
+      Impact: undefined,
+      Presentation: undefined,
+    } as any,
   });
 
   useEffect(() => {

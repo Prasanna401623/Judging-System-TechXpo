@@ -77,12 +77,12 @@ export default function Home() {
         const submissionRef = ref(db, `submissions/${existingSubmission.id}`);
         await update(submissionRef, {
           scores: {
-            Presentation: data.Presentation,
-            UI: data.UI,
-            Features: data.Features,
+            Innovation: data.Innovation,
+            TechnicalComplexity: data.TechnicalComplexity,
+            Functionality: data.Functionality,
+            UXDesign: data.UXDesign,
             Impact: data.Impact,
-            Technical: data.Technical,
-            AI: data.AI,
+            Presentation: data.Presentation,
           },
           timestamp: Date.now(),
         });
@@ -93,12 +93,12 @@ export default function Home() {
           judgeName,
           teamName: data.teamName,
           scores: {
-            Presentation: data.Presentation,
-            UI: data.UI,
-            Features: data.Features,
+            Innovation: data.Innovation,
+            TechnicalComplexity: data.TechnicalComplexity,
+            Functionality: data.Functionality,
+            UXDesign: data.UXDesign,
             Impact: data.Impact,
-            Technical: data.Technical,
-            AI: data.AI,
+            Presentation: data.Presentation,
           },
           timestamp: Date.now(),
         };
