@@ -17,6 +17,9 @@ export function AdminLoginForm({ onLogin }: AdminLoginFormProps) {
     if (!isValid) {
       toast.error('Invalid password');
       setPassword('');
+    } else {
+      // Force page reload to update navigation state
+      window.location.reload();
     }
   };
 

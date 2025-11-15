@@ -26,6 +26,16 @@ export function Navigation() {
             TechXpo 2025
           </Link>
           <div className="flex gap-4">
+            {isAdmin && (
+              <Link href="/leaderboard">
+                <Button variant="outline">🏆 Leaderboard</Button>
+              </Link>
+            )}
+            {!isAdminPage && (
+              <Link href="/admin">
+                <Button variant="outline">Admin Panel</Button>
+              </Link>
+            )}
             {isAdminPage ? (
               <Button onClick={handleAdminLogout} variant="outline">
                 Logout
@@ -34,10 +44,6 @@ export function Navigation() {
               <Button onClick={handleJudgeLogout} variant="outline">
                 Logout ({judgeName})
               </Button>
-            ) : !isAdmin ? (
-              <Link href="/admin">
-                <Button variant="outline">Admin Panel</Button>
-              </Link>
             ) : null}
           </div>
         </div>
