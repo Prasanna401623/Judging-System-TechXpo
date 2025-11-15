@@ -39,6 +39,7 @@ export default function AdminPage() {
   const [newTeamName, setNewTeamName] = useState('');
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamScores, setTeamScores] = useState<TeamScores>({});
+  const [allSubmissions, setAllSubmissions] = useState<Submission[]>([]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -62,6 +63,13 @@ export default function AdminPage() {
     const submissionsRef = ref(db, 'submissions');
     const unsubscribeSubmissions = onValue(submissionsRef, (snapshot) => {
       const submissionsData = snapshot.val() || {};
+
+      // Store all submissions
+      const submissions = Object.entries(submissionsData).map(([id, data]) => ({
+        ...(data as Submission),
+        id,
+      }));
+      setAllSubmissions(submissions);
 
       // Calculate scores
       const scores: TeamScores = {};
@@ -231,16 +239,17 @@ export default function AdminPage() {
                 averageScore: 0,
                 judgeCount: 0,
                 scores: {
-                  Presentation: 0,
-                  UI: 0,
-                  Features: 0,
+                  Innovation: 0,
+                  TechnicalComplexity: 0,
+                  Functionality: 0,
+                  UXDesign: 0,
                   Impact: 0,
-                  Technical: 0,
-                  AI: 0,
+                  Presentation: 0,
                 },
               };
 
               const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
+              const teamSubmissions = allSubmissions.filter(sub => sub.teamName === team.name);
 
               return (
                 <div key={team.id} className="bg-white p-6 rounded-lg shadow">
@@ -250,30 +259,57 @@ export default function AdminPage() {
                       {scoreData.judgeCount} judge{scoreData.judgeCount !== 1 ? 's' : ''}
                     </div>
                   </div>
-                  <div className="grid gap-2">
-                    {Object.entries(CRITERIA).map(([key, label]) => {
-                      const score = scoreData.scores[key as keyof typeof scoreData.scores];
-                      const maxScore = MAX_SCORES[key as keyof typeof MAX_SCORES];
-                      const averageScore = score / (scoreData.judgeCount || 1);
-                      
-                      return (
-                        <div key={key} className="flex justify-between items-center">
-                          <span className="text-sm">{label}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{averageScore.toFixed(1)}</span>
-                            <span className="text-sm text-gray-500">/ {maxScore}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                    <div className="flex justify-between font-semibold mt-2 pt-2 border-t">
-                      <span>Average Total Score:</span>
-                      <div className="flex items-center gap-2">
-                        <span>{scoreData.averageScore.toFixed(2)}</span>
-                        <span className="text-sm text-gray-500">/ {maxTotalScore}</span>
-                      </div>
+                  
+                  {/* Individual Judge Scores Table */}
+                  {teamSubmissions.length > 0 && (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm border-collapse">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="border p-2 text-left">Judge</th>
+                            {Object.entries(CRITERIA).map(([key, label]) => (
+                              <th key={key} className="border p-2 text-center">
+                                {label.split('(')[0].trim()}
+                              </th>
+                            ))}
+                            <th className="border p-2 text-center font-semibold">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {teamSubmissions.map((submission, idx) => {
+                            const total = Object.values(submission.scores).reduce((sum, val) => sum + val, 0);
+                            return (
+                              <tr key={idx} className="hover:bg-gray-50">
+                                <td className="border p-2 font-medium">{submission.judgeName}</td>
+                                {Object.keys(CRITERIA).map((key) => (
+                                  <td key={key} className="border p-2 text-center">
+                                    {submission.scores[key as keyof typeof submission.scores]}
+                                  </td>
+                                ))}
+                                <td className="border p-2 text-center font-semibold">{total}</td>
+                              </tr>
+                            );
+                          })}
+                          {/* Average Row */}
+                          <tr className="bg-blue-50 font-semibold">
+                            <td className="border p-2">Average</td>
+                            {Object.keys(CRITERIA).map((key) => {
+                              const score = scoreData.scores[key as keyof typeof scoreData.scores];
+                              const averageScore = score / (scoreData.judgeCount || 1);
+                              return (
+                                <td key={key} className="border p-2 text-center">
+                                  {averageScore.toFixed(1)}
+                                </td>
+                              );
+                            })}
+                            <td className="border p-2 text-center">
+                              {scoreData.averageScore.toFixed(2)}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
                     </div>
-                  </div>
+                  )}
                 </div>
               );
             })}
