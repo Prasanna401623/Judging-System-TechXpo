@@ -73,12 +73,14 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
   return (
     <Card className="w-[90%] max-w-2xl mx-auto mt-8">
       <CardHeader>
-        <CardTitle>Score Submission</CardTitle>
-        <CardDescription>
-          Judge: {judgeName}
-          <div className="mt-2 font-medium">
-            Total Score: {totalScore}/{maxTotalScore} points
-          </div>
+        <div className="flex justify-between items-start">
+          <CardTitle>Score Submission</CardTitle>
+          <CardDescription className="text-right">
+            Judge: {judgeName}
+          </CardDescription>
+        </div>
+        <CardDescription className="mt-2 font-medium">
+          Total Score: {totalScore}/{maxTotalScore} points
         </CardDescription>
       </CardHeader>
       <Form {...form}>
