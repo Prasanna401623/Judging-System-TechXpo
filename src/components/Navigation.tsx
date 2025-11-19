@@ -7,7 +7,7 @@ import { useJudge } from '@/hooks/useJudge';
 export function Navigation() {
   const pathname = usePathname();
   const { isAdmin, logout: adminLogout } = useAdmin();
-  const { judgeName, logout: judgeLogout } = useJudge();
+  const { judgeCode, judgeName, logout: judgeLogout } = useJudge();
   const isAdminPage = pathname === '/admin';
 
   const handleAdminLogout = () => {
@@ -40,7 +40,7 @@ export function Navigation() {
               <Button onClick={handleAdminLogout} variant="outline">
                 Logout
               </Button>
-            ) : judgeName ? (
+            ) : (judgeName || judgeCode) ? (
               <Button onClick={handleJudgeLogout} variant="outline">
                 Logout ({judgeName})
               </Button>

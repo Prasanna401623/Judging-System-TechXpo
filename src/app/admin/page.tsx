@@ -34,12 +34,16 @@ interface Team {
   name: string;
 }
 
+interface SubmissionWithId extends Submission {
+  id: string;
+}
+
 export default function AdminPage() {
   const { isAdmin, isLoading, login } = useAdmin();
   const [newTeamName, setNewTeamName] = useState('');
   const [teams, setTeams] = useState<Team[]>([]);
   const [teamScores, setTeamScores] = useState<TeamScores>({});
-  const [allSubmissions, setAllSubmissions] = useState<Submission[]>([]);
+  const [allSubmissions, setAllSubmissions] = useState<SubmissionWithId[]>([]);
 
   useEffect(() => {
     if (!isAdmin) return;
@@ -64,8 +68,8 @@ export default function AdminPage() {
     const unsubscribeSubmissions = onValue(submissionsRef, (snapshot) => {
       const submissionsData = snapshot.val() || {};
 
-      // Store all submissions
-      const submissions = Object.entries(submissionsData).map(([id, data]) => ({
+      // Store all submissions with IDs
+      const submissions: SubmissionWithId[] = Object.entries(submissionsData).map(([id, data]) => ({
         ...(data as Submission),
         id,
       }));
@@ -165,6 +169,23 @@ export default function AdminPage() {
     } catch (error: Error | unknown) {
       console.error('Error removing team:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to remove team';
+      if (errorMessage.includes('PERMISSION_DENIED')) {
+        toast.error('Permission denied. Please make sure you are logged in as admin.');
+      } else {
+        toast.error(errorMessage);
+      }
+    }
+  };
+
+  const handleDeleteScore = async (submissionId: string, judgeName: string, teamName: string) => {
+    if (!isAdmin) return;
+
+    try {
+      await remove(ref(db, `submissions/${submissionId}`));
+      toast.success(`Score by ${judgeName} for ${teamName} deleted successfully!`);
+    } catch (error: Error | unknown) {
+      console.error('Error deleting score:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete score';
       if (errorMessage.includes('PERMISSION_DENIED')) {
         toast.error('Permission denied. Please make sure you are logged in as admin.');
       } else {
@@ -273,13 +294,14 @@ export default function AdminPage() {
                               </th>
                             ))}
                             <th className="border p-2 text-center font-semibold">Total</th>
+                            <th className="border p-2 text-center">Actions</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {teamSubmissions.map((submission, idx) => {
+                          {teamSubmissions.map((submission) => {
                             const total = Object.values(submission.scores).reduce((sum, val) => sum + val, 0);
                             return (
-                              <tr key={idx} className="hover:bg-gray-50">
+                              <tr key={submission.id} className="hover:bg-gray-50">
                                 <td className="border p-2 font-medium">{submission.judgeName}</td>
                                 {Object.keys(CRITERIA).map((key) => (
                                   <td key={key} className="border p-2 text-center">
@@ -287,6 +309,15 @@ export default function AdminPage() {
                                   </td>
                                 ))}
                                 <td className="border p-2 text-center font-semibold">{total}</td>
+                                <td className="border p-2 text-center">
+                                  <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteScore(submission.id, submission.judgeName, team.name)}
+                                  >
+                                    Delete
+                                  </Button>
+                                </td>
                               </tr>
                             );
                           })}
@@ -305,6 +336,7 @@ export default function AdminPage() {
                             <td className="border p-2 text-center">
                               {scoreData.averageScore.toFixed(2)}
                             </td>
+                            <td className="border p-2"></td>
                           </tr>
                         </tbody>
                       </table>

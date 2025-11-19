@@ -11,7 +11,12 @@ export function useAdmin() {
   }, []);
 
   const login = (password: string): boolean => {
-    const isValid = password === 'gdsc123';
+    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
+    if (!adminPassword) {
+      console.error('Admin password not configured');
+      return false;
+    }
+    const isValid = password === adminPassword;
     if (isValid) {
       localStorage.setItem('isAdmin', 'true');
       setIsAdmin(true);
