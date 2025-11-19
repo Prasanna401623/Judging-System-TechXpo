@@ -29,7 +29,11 @@ export default function Home() {
   }, []);
 
   const loadExistingSubmission = async (teamName: string) => {
-    if (!judgeCode) return null;
+    if (!judgeCode || !teamName) {
+      setExistingSubmission(null);
+      setHasAlreadyScored(false);
+      return null;
+    }
 
     try {
       const submissionsRef = ref(db, 'submissions');
@@ -65,6 +69,8 @@ export default function Home() {
       return false;
     } catch (error) {
       console.error('Error loading submission:', error);
+      setExistingSubmission(null);
+      setHasAlreadyScored(false);
       return false;
     }
   };
@@ -73,13 +79,25 @@ export default function Home() {
     if (!judgeCode || !judgeName) return;
 
     try {
+      // Double-check if this team has already been scored before submitting
       const submissionsRef = ref(db, 'submissions');
+      const judgeTeamQuery = query(
+        submissionsRef,
+        orderByChild('judgeCode'),
+        equalTo(judgeCode)
+      );
+
+      const checkSnapshot = await get(judgeTeamQuery);
+      const existingSubmissions = checkSnapshot.val() || {};
       
-      // Only allow new submissions, not updates
-      // Updates can only happen after admin deletes the score
-      if (hasAlreadyScored) {
+      const alreadySubmitted = Object.values(existingSubmissions).some(
+        (sub) => (sub as Submission).teamName === data.teamName
+      );
+
+      if (alreadySubmitted) {
         toast.error('You have already scored this team. Contact admin to delete your score if you need to re-score.');
-        return;
+        setHasAlreadyScored(true);
+        throw new Error('Team already scored');
       }
 
       // Submit new scores
@@ -101,12 +119,18 @@ export default function Home() {
       await push(submissionsRef, submission);
       toast.success('Scores submitted successfully!');
       
-      // Clear existing submission state and mark as scored
-      setExistingSubmission(null);
+      // Mark this specific team as scored and return success
       setHasAlreadyScored(true);
+      return { success: true };
     } catch (error) {
+      const errorMessage = (error as Error).message || 'Unknown error';
       console.error('Error submitting scores:', error);
-      toast.error('Failed to submit scores. Please try again.');
+      
+      // Only show generic error message for non-duplicate submissions
+      if (errorMessage !== 'Team already scored') {
+        toast.error(`Failed to submit scores: ${errorMessage}`);
+      }
+      throw error;
     }
   };
 

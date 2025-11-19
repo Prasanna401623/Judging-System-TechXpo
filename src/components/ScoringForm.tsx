@@ -20,7 +20,7 @@ const formSchema = z.object({
 });
 
 interface ScoringFormProps {
-  onSubmit: (data: JudgingFormData) => Promise<void>;
+  onSubmit: (data: JudgingFormData) => Promise<{ success: boolean } | void>;
   onTeamSelect: (teamName: string) => Promise<boolean | null>;
   judgeName: string;
   teams: string[];
@@ -61,18 +61,23 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
 
   const handleSubmit = async (data: JudgingFormData) => {
     try {
-      await onSubmit(data);
-      // Always reset the form after submission (both new and updates)
-      form.reset({
-        teamName: '',
-        Innovation: '' as any,
-        TechnicalComplexity: '' as any,
-        Functionality: '' as any,
-        UXDesign: '' as any,
-        Impact: '' as any,
-        Presentation: '' as any,
-      });
+      const result = await onSubmit(data);
+      // Only reset the form if submission was successful
+      if (result?.success) {
+        form.reset({
+          teamName: '',
+          Innovation: '' as any,
+          TechnicalComplexity: '' as any,
+          Functionality: '' as any,
+          UXDesign: '' as any,
+          Impact: '' as any,
+          Presentation: '' as any,
+        });
+        // Trigger team select with empty string to reset the scored state
+        await onTeamSelect('');
+      }
     } catch (error) {
+      // Error already handled in parent component, just log it
       console.error('Error submitting scores:', error);
     }
   };

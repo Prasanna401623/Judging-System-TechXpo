@@ -3,7 +3,7 @@
     "submissions": {
       ".read": true,
       ".write": true,
-      ".indexOn": ["judgeName"]
+      ".indexOn": ["judgeName", "judgeCode"]
     },
     "teams": {
       ".read": true,
