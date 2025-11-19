@@ -7,12 +7,18 @@ interface JudgeNameFormProps {
   onSubmit: (code: string, name: string) => void;
 }
 
-// Map judge codes to names
-const JUDGE_CODES: Record<string, string> = {
-  'JUDGE1': 'Cameron Brister',
-  'JUDGE2': 'Hunter McFadden',
-  'JUDGE3': 'Judge 3',
-};
+// Map judge codes to names from environment variables
+const JUDGE_CODES: Record<string, string> = {};
+
+if (process.env.NEXT_PUBLIC_JUDGE1_CODE && process.env.NEXT_PUBLIC_JUDGE1_NAME) {
+  JUDGE_CODES[process.env.NEXT_PUBLIC_JUDGE1_CODE] = process.env.NEXT_PUBLIC_JUDGE1_NAME;
+}
+if (process.env.NEXT_PUBLIC_JUDGE2_CODE && process.env.NEXT_PUBLIC_JUDGE2_NAME) {
+  JUDGE_CODES[process.env.NEXT_PUBLIC_JUDGE2_CODE] = process.env.NEXT_PUBLIC_JUDGE2_NAME;
+}
+if (process.env.NEXT_PUBLIC_JUDGE3_CODE && process.env.NEXT_PUBLIC_JUDGE3_NAME) {
+  JUDGE_CODES[process.env.NEXT_PUBLIC_JUDGE3_CODE] = process.env.NEXT_PUBLIC_JUDGE3_NAME;
+}
 
 export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
   const [code, setCode] = useState('');
