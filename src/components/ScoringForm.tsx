@@ -25,9 +25,10 @@ interface ScoringFormProps {
   judgeName: string;
   teams: string[];
   existingSubmission?: JudgingFormData;
+  hasAlreadyScored: boolean;
 }
 
-export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existingSubmission }: ScoringFormProps) {
+export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existingSubmission, hasAlreadyScored }: ScoringFormProps) {
   const form = useForm<JudgingFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -162,11 +163,20 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
             ))}
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
+            {hasAlreadyScored && (
+              <div className="text-sm text-amber-600 font-medium bg-amber-50 p-3 rounded-md">
+                ⚠️ You have already scored this team. Contact admin to delete your score if you need to re-score.
+              </div>
+            )}
             <div className="text-sm text-muted-foreground">
               Make sure your scores reflect the quality of the project in each category.
             </div>
-            <Button type="submit" className="w-full h-12 text-lg">
-              {existingSubmission ? 'Update Scores' : 'Submit Scores'}
+            <Button 
+              type="submit" 
+              className="w-full h-12 text-lg"
+              disabled={hasAlreadyScored}
+            >
+              {hasAlreadyScored ? 'Already Scored' : 'Submit Scores'}
             </Button>
           </CardFooter>
         </form>

@@ -8,6 +8,7 @@ export interface Score {
 }
 
 export interface Submission {
+  judgeCode: string;
   judgeName: string;
   teamName: string;
   scores: Score;

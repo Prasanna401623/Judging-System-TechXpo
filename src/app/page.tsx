@@ -12,9 +12,10 @@ import type { JudgingFormData, Submission } from '@/types';
 import Image from 'next/image';
 
 export default function Home() {
-  const { judgeName, setJudgeName, isLoading } = useJudge();
+  const { judgeCode, judgeName, setJudge, isLoading } = useJudge();
   const [teams, setTeams] = useState<string[]>([]);
   const [existingSubmission, setExistingSubmission] = useState<{ id: string; data: JudgingFormData } | null>(null);
+  const [hasAlreadyScored, setHasAlreadyScored] = useState(false);
 
   useEffect(() => {
     // Listen for teams
@@ -28,14 +29,14 @@ export default function Home() {
   }, []);
 
   const loadExistingSubmission = async (teamName: string) => {
-    if (!judgeName) return null;
+    if (!judgeCode) return null;
 
     try {
       const submissionsRef = ref(db, 'submissions');
       const judgeTeamQuery = query(
         submissionsRef,
-        orderByChild('judgeName'),
-        equalTo(judgeName)
+        orderByChild('judgeCode'),
+        equalTo(judgeCode)
       );
 
       const snapshot = await get(judgeTeamQuery);
@@ -55,10 +56,12 @@ export default function Home() {
             ...scores
           }
         });
+        setHasAlreadyScored(true);
         return true;
       }
       
       setExistingSubmission(null);
+      setHasAlreadyScored(false);
       return false;
     } catch (error) {
       console.error('Error loading submission:', error);
@@ -67,48 +70,40 @@ export default function Home() {
   };
 
   const handleScoreSubmit = async (data: JudgingFormData) => {
-    if (!judgeName) return;
+    if (!judgeCode || !judgeName) return;
 
     try {
       const submissionsRef = ref(db, 'submissions');
       
-      // If we have an existing submission, update it
-      if (existingSubmission?.id) {
-        const submissionRef = ref(db, `submissions/${existingSubmission.id}`);
-        await update(submissionRef, {
-          scores: {
-            Innovation: data.Innovation,
-            TechnicalComplexity: data.TechnicalComplexity,
-            Functionality: data.Functionality,
-            UXDesign: data.UXDesign,
-            Impact: data.Impact,
-            Presentation: data.Presentation,
-          },
-          timestamp: Date.now(),
-        });
-        toast.success('Scores updated successfully!');
-      } else {
-        // Submit new scores
-        const submission = {
-          judgeName,
-          teamName: data.teamName,
-          scores: {
-            Innovation: data.Innovation,
-            TechnicalComplexity: data.TechnicalComplexity,
-            Functionality: data.Functionality,
-            UXDesign: data.UXDesign,
-            Impact: data.Impact,
-            Presentation: data.Presentation,
-          },
-          timestamp: Date.now(),
-        };
-
-        await push(submissionsRef, submission);
-        toast.success('Scores submitted successfully!');
+      // Only allow new submissions, not updates
+      // Updates can only happen after admin deletes the score
+      if (hasAlreadyScored) {
+        toast.error('You have already scored this team. Contact admin to delete your score if you need to re-score.');
+        return;
       }
+
+      // Submit new scores
+      const submission = {
+        judgeCode,
+        judgeName,
+        teamName: data.teamName,
+        scores: {
+          Innovation: data.Innovation,
+          TechnicalComplexity: data.TechnicalComplexity,
+          Functionality: data.Functionality,
+          UXDesign: data.UXDesign,
+          Impact: data.Impact,
+          Presentation: data.Presentation,
+        },
+        timestamp: Date.now(),
+      };
+
+      await push(submissionsRef, submission);
+      toast.success('Scores submitted successfully!');
       
-      // Clear existing submission state after successful submission
+      // Clear existing submission state and mark as scored
       setExistingSubmission(null);
+      setHasAlreadyScored(true);
     } catch (error) {
       console.error('Error submitting scores:', error);
       toast.error('Failed to submit scores. Please try again.');
@@ -134,7 +129,7 @@ export default function Home() {
               priority
             />
           </div>
-          <JudgeNameForm onSubmit={setJudgeName} />
+          <JudgeNameForm onSubmit={setJudge} />
         </div>
       ) : (
         <ScoringForm 
@@ -143,6 +138,7 @@ export default function Home() {
           judgeName={judgeName} 
           teams={teams}
           existingSubmission={existingSubmission?.data}
+          hasAlreadyScored={hasAlreadyScored}
         />
       )}
     </main>
