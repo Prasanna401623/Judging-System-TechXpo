@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TechXpo Judging System",
+  title: "Hawkathon 2026 Judging System",
   description: "Judging system for GDSC ULM events",
   icons: {
     icon: "/favicon.png",

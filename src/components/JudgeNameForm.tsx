@@ -39,7 +39,7 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
   return (
     <Card className="w-[90%] max-w-md mx-auto mt-8">
       <CardHeader>
-        <CardTitle>Welcome to TechXpo 2025 Judging</CardTitle>
+        <CardTitle>Welcome to Hawkathon 2026 Judging</CardTitle>
         <CardDescription>Please enter your judge code to begin judging</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
