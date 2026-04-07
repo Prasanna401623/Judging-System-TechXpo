@@ -16,12 +16,11 @@ interface TeamScores {
     averageScore: number;
     judgeCount: number;
     scores: {
-      Innovation: number;
-      TechnicalComplexity: number;
-      Functionality: number;
-      UXDesign: number;
-      Impact: number;
-      Presentation: number;
+      ProblemRelevance: number;
+      NoveltyDifferentiation: number;
+      TechnicalDepth: number;
+      ImplementationQuality: number;
+      DemoTeamComm: number;
     };
   };
 }
@@ -68,25 +67,29 @@ export default function LeaderboardPage() {
             totalScore: 0,
             averageScore: 0,
             judgeCount: 0,
-            scores: { Innovation: 0, TechnicalComplexity: 0, Functionality: 0, UXDesign: 0, Impact: 0, Presentation: 0 },
+            scores: {
+              ProblemRelevance: 0,
+              NoveltyDifferentiation: 0,
+              TechnicalDepth: 0,
+              ImplementationQuality: 0,
+              DemoTeamComm: 0,
+            },
           };
         }
 
         scores[teamName].judgeCount++;
-        scores[teamName].scores.Innovation += submissionScores.Innovation;
-        scores[teamName].scores.TechnicalComplexity += submissionScores.TechnicalComplexity;
-        scores[teamName].scores.Functionality += submissionScores.Functionality;
-        scores[teamName].scores.UXDesign += submissionScores.UXDesign;
-        scores[teamName].scores.Impact += submissionScores.Impact;
-        scores[teamName].scores.Presentation += submissionScores.Presentation;
+        scores[teamName].scores.ProblemRelevance += submissionScores.ProblemRelevance;
+        scores[teamName].scores.NoveltyDifferentiation += submissionScores.NoveltyDifferentiation;
+        scores[teamName].scores.TechnicalDepth += submissionScores.TechnicalDepth;
+        scores[teamName].scores.ImplementationQuality += submissionScores.ImplementationQuality;
+        scores[teamName].scores.DemoTeamComm += submissionScores.DemoTeamComm;
 
-        const total = 
-          submissionScores.Innovation + 
-          submissionScores.TechnicalComplexity + 
-          submissionScores.Functionality + 
-          submissionScores.UXDesign + 
-          submissionScores.Impact + 
-          submissionScores.Presentation;
+        const total =
+          submissionScores.ProblemRelevance +
+          submissionScores.NoveltyDifferentiation +
+          submissionScores.TechnicalDepth +
+          submissionScores.ImplementationQuality +
+          submissionScores.DemoTeamComm;
         scores[teamName].totalScore += total;
       });
 
@@ -176,7 +179,7 @@ export default function LeaderboardPage() {
                     </div>
                   );
                 })}
-              
+            
               {teams.length === 0 && (
                 <div className="text-center text-gray-500 py-12">
                   No teams have been added yet.

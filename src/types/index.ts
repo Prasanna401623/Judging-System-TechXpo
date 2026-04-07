@@ -1,10 +1,9 @@
 export interface Score {
-  Innovation: number;
-  TechnicalComplexity: number;
-  Functionality: number;
-  UXDesign: number;
-  Impact: number;
-  Presentation: number;
+  ProblemRelevance: number;
+  NoveltyDifferentiation: number;
+  TechnicalDepth: number;
+  ImplementationQuality: number;
+  DemoTeamComm: number;
 }
 
 export interface Submission {
@@ -17,28 +16,25 @@ export interface Submission {
 
 export interface JudgingFormData {
   teamName: string;
-  Innovation: number;
-  TechnicalComplexity: number;
-  Functionality: number;
-  UXDesign: number;
-  Impact: number;
-  Presentation: number;
+  ProblemRelevance: number;
+  NoveltyDifferentiation: number;
+  TechnicalDepth: number;
+  ImplementationQuality: number;
+  DemoTeamComm: number;
 }
 
 export const CRITERIA = {
-  Innovation: "Innovation (max 20)",
-  TechnicalComplexity: "Technical Complexity (max 20)",
-  Functionality: "Functionality (max 20)",
-  UXDesign: "UX & Design (max 15)",
-  Impact: "Impact (max 15)",
-  Presentation: "Presentation (max 10)",
+  ProblemRelevance: "Problem Relevance & User Value (max 20)",
+  NoveltyDifferentiation: "Novelty & Differentiation (max 20)",
+  TechnicalDepth: "Technical Difficulty & Depth (max 20)",
+  ImplementationQuality: "Implementation Quality, Security & Responsible AI (max 20)",
+  DemoTeamComm: "Demo & Team Communication (max 20)",
 } as const;
 
 export const MAX_SCORES = {
-  Innovation: 20,
-  TechnicalComplexity: 20,
-  Functionality: 20,
-  UXDesign: 15,
-  Impact: 15,
-  Presentation: 10,
-} as const; 
+  ProblemRelevance: 20,
+  NoveltyDifferentiation: 20,
+  TechnicalDepth: 20,
+  ImplementationQuality: 20,
+  DemoTeamComm: 20,
+} as const;

@@ -11,12 +11,11 @@ import { CRITERIA, MAX_SCORES, type JudgingFormData } from '@/types';
 
 const formSchema = z.object({
   teamName: z.string().min(1, 'Please select a team'),
-  Innovation: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  TechnicalComplexity: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  Functionality: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  UXDesign: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(15, 'Maximum score is 15'),
-  Impact: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(15, 'Maximum score is 15'),
-  Presentation: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(10, 'Maximum score is 10'),
+  ProblemRelevance: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  NoveltyDifferentiation: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  TechnicalDepth: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  ImplementationQuality: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  DemoTeamComm: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
 });
 
 interface ScoringFormProps {
@@ -33,12 +32,11 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
     resolver: zodResolver(formSchema),
     defaultValues: {
       teamName: '',
-      Innovation: '' as any,
-      TechnicalComplexity: '' as any,
-      Functionality: '' as any,
-      UXDesign: '' as any,
-      Impact: '' as any,
-      Presentation: '' as any,
+      ProblemRelevance: '' as any,
+      NoveltyDifferentiation: '' as any,
+      TechnicalDepth: '' as any,
+      ImplementationQuality: '' as any,
+      DemoTeamComm: '' as any,
     },
   });
 
@@ -49,12 +47,11 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
       // Reset to empty form when existingSubmission is null
       form.reset({
         teamName: '',
-        Innovation: '' as any,
-        TechnicalComplexity: '' as any,
-        Functionality: '' as any,
-        UXDesign: '' as any,
-        Impact: '' as any,
-        Presentation: '' as any,
+        ProblemRelevance: '' as any,
+        NoveltyDifferentiation: '' as any,
+        TechnicalDepth: '' as any,
+        ImplementationQuality: '' as any,
+        DemoTeamComm: '' as any,
       });
     }
   }, [existingSubmission, form]);
@@ -66,12 +63,11 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
       if (result?.success) {
         form.reset({
           teamName: '',
-          Innovation: '' as any,
-          TechnicalComplexity: '' as any,
-          Functionality: '' as any,
-          UXDesign: '' as any,
-          Impact: '' as any,
-          Presentation: '' as any,
+          ProblemRelevance: '' as any,
+          NoveltyDifferentiation: '' as any,
+          TechnicalDepth: '' as any,
+          ImplementationQuality: '' as any,
+          DemoTeamComm: '' as any,
         });
         // Trigger team select with empty string to reset the scored state
         await onTeamSelect('');
@@ -188,4 +184,4 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
       </Form>
     </Card>
   );
-} 
+}
