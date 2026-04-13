@@ -106,12 +106,11 @@ export default function Home() {
         judgeName,
         teamName: data.teamName,
         scores: {
-          Innovation: data.Innovation,
-          TechnicalComplexity: data.TechnicalComplexity,
-          Functionality: data.Functionality,
-          UXDesign: data.UXDesign,
-          Impact: data.Impact,
-          Presentation: data.Presentation,
+          ProblemRelevance: data.ProblemRelevance,
+          NoveltyDifferentiation: data.NoveltyDifferentiation,
+          TechnicalDepth: data.TechnicalDepth,
+          ImplementationQuality: data.ImplementationQuality,
+          DemoTeamComm: data.DemoTeamComm,
         },
         timestamp: Date.now(),
       };
