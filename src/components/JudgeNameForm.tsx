@@ -54,7 +54,7 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
                   setCode(e.target.value);
                   setError('');
                 }}
-                className="text-lg h-12"
+                className="text-lg md:text-xl h-14 md:h-16 rounded-xl"
                 required
               />
               {error && (
@@ -64,7 +64,7 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
           </div>
         </CardContent>
         <CardFooter className="pt-6">
-          <Button type="submit" className="w-full h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all rounded-xl" disabled={!code.trim()}>
+          <Button type="submit" className="w-full h-16 md:h-20 text-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all rounded-xl" disabled={!code.trim()}>
             Start Judging
           </Button>
         </CardFooter>
