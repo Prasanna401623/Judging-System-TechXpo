@@ -19,12 +19,11 @@ interface TeamScores {
     averageScore: number;
     judgeCount: number;
     scores: {
-      Innovation: number;
-      TechnicalComplexity: number;
-      Functionality: number;
-      UXDesign: number;
-      Impact: number;
-      Presentation: number;
+      ProblemRelevance: number;
+      NoveltyDifferentiation: number;
+      TechnicalDepth: number;
+      ImplementationQuality: number;
+      DemoTeamComm: number;
     };
   };
 }
@@ -84,25 +83,23 @@ export default function AdminPage() {
             totalScore: 0,
             averageScore: 0,
             judgeCount: 0,
-            scores: { Innovation: 0, TechnicalComplexity: 0, Functionality: 0, UXDesign: 0, Impact: 0, Presentation: 0 },
+            scores: { ProblemRelevance: 0, NoveltyDifferentiation: 0, TechnicalDepth: 0, ImplementationQuality: 0, DemoTeamComm: 0 },
           };
         }
 
         scores[teamName].judgeCount++;
-        scores[teamName].scores.Innovation += submissionScores.Innovation;
-        scores[teamName].scores.TechnicalComplexity += submissionScores.TechnicalComplexity;
-        scores[teamName].scores.Functionality += submissionScores.Functionality;
-        scores[teamName].scores.UXDesign += submissionScores.UXDesign;
-        scores[teamName].scores.Impact += submissionScores.Impact;
-        scores[teamName].scores.Presentation += submissionScores.Presentation;
+        scores[teamName].scores.ProblemRelevance += submissionScores.ProblemRelevance;
+        scores[teamName].scores.NoveltyDifferentiation += submissionScores.NoveltyDifferentiation;
+        scores[teamName].scores.TechnicalDepth += submissionScores.TechnicalDepth;
+        scores[teamName].scores.ImplementationQuality += submissionScores.ImplementationQuality;
+        scores[teamName].scores.DemoTeamComm += submissionScores.DemoTeamComm;
 
         const total = 
-          submissionScores.Innovation + 
-          submissionScores.TechnicalComplexity + 
-          submissionScores.Functionality + 
-          submissionScores.UXDesign + 
-          submissionScores.Impact + 
-          submissionScores.Presentation;
+          submissionScores.ProblemRelevance + 
+          submissionScores.NoveltyDifferentiation + 
+          submissionScores.TechnicalDepth + 
+          submissionScores.ImplementationQuality + 
+          submissionScores.DemoTeamComm;
         scores[teamName].totalScore += total;
       });
 
@@ -200,7 +197,7 @@ export default function AdminPage() {
 
   if (!isAdmin) {
     return (
-      <main className="min-h-screen p-4 bg-gray-50">
+      <main className="min-h-screen pt-28 pb-12 px-4 sm:px-6 lg:px-8 bg-slate-50 selection:bg-blue-200">
         <Navigation />
         <Toaster position="top-center" />
         <AdminLoginForm onLogin={login} />
@@ -209,7 +206,7 @@ export default function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen p-4 bg-gray-50">
+    <main className="min-h-screen pt-28 pb-12 px-4 sm:px-6 lg:px-8 bg-slate-50 selection:bg-blue-200">
       <Navigation />
       <Toaster position="top-center" />
       
@@ -260,12 +257,11 @@ export default function AdminPage() {
                 averageScore: 0,
                 judgeCount: 0,
                 scores: {
-                  Innovation: 0,
-                  TechnicalComplexity: 0,
-                  Functionality: 0,
-                  UXDesign: 0,
-                  Impact: 0,
-                  Presentation: 0,
+                  ProblemRelevance: 0,
+                  NoveltyDifferentiation: 0,
+                  TechnicalDepth: 0,
+                  ImplementationQuality: 0,
+                  DemoTeamComm: 0,
                 },
               };
 

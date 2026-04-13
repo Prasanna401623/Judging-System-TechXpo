@@ -91,8 +91,8 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
   const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
 
   return (
-    <Card className="w-[90%] max-w-2xl mx-auto mt-8">
-      <CardHeader>
+    <Card className="w-full max-w-2xl mx-auto mt-4 bg-white shadow-xl shadow-blue-900/5 ring-1 ring-gray-900/5 rounded-2xl overflow-hidden">
+      <CardHeader className="bg-gray-50/50 border-b border-gray-100 pb-6">
         <div className="flex justify-between items-start">
           <CardTitle>Score Submission</CardTitle>
           <CardDescription className="text-right">
@@ -174,7 +174,7 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
             </div>
             <Button 
               type="submit" 
-              className="w-full h-12 text-lg"
+              className="w-full h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all rounded-xl"
               disabled={hasAlreadyScored}
             >
               {hasAlreadyScored ? 'Already Scored' : 'Submit Scores'}

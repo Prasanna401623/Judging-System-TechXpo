@@ -19,13 +19,18 @@ export function Navigation() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white border-b border-gray-200 z-50">
+    <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md shadow-sm z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16 items-center">
-          <Link href="/" className="text-xl font-bold">
-            Hawkathon 2026
+        <div className="flex flex-col sm:flex-row justify-between h-auto sm:h-16 py-3 sm:py-0 items-center gap-3 sm:gap-0">
+          <Link href="/" className="flex flex-col items-center sm:items-start group">
+            <span className="text-2xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent group-hover:opacity-80 transition-opacity">
+              Hawkathon 2026
+            </span>
+            <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+              Powered by <span className="text-blue-600">ACM</span> & <span className="text-red-500">GDSC</span>
+            </span>
           </Link>
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center">
             {isAdmin && (
               <Link href="/leaderboard">
                 <Button variant="outline">🏆 Leaderboard</Button>
