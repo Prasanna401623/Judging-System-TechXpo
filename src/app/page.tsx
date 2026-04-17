@@ -63,7 +63,7 @@ export default function Home() {
         setHasAlreadyScored(true);
         return true;
       }
-      
+
       setExistingSubmission(null);
       setHasAlreadyScored(false);
       return false;
@@ -89,7 +89,7 @@ export default function Home() {
 
       const checkSnapshot = await get(judgeTeamQuery);
       const existingSubmissions = checkSnapshot.val() || {};
-      
+
       const alreadySubmitted = Object.values(existingSubmissions).some(
         (sub) => (sub as Submission).teamName === data.teamName
       );
@@ -117,14 +117,14 @@ export default function Home() {
 
       await push(submissionsRef, submission);
       toast.success('Scores submitted successfully!');
-      
+
       // Mark this specific team as scored and return success
       setHasAlreadyScored(true);
       return { success: true };
     } catch (error) {
       const errorMessage = (error as Error).message || 'Unknown error';
       console.error('Error submitting scores:', error);
-      
+
       // Only show generic error message for non-duplicate submissions
       if (errorMessage !== 'Team already scored') {
         toast.error(`Failed to submit scores: ${errorMessage}`);
@@ -155,10 +155,10 @@ export default function Home() {
           <JudgeNameForm onSubmit={setJudge} />
         </div>
       ) : (
-        <ScoringForm 
-          onSubmit={handleScoreSubmit} 
+        <ScoringForm
+          onSubmit={handleScoreSubmit}
           onTeamSelect={loadExistingSubmission}
-          judgeName={judgeName} 
+          judgeName={judgeName}
           teams={teams}
           existingSubmission={existingSubmission?.data}
           hasAlreadyScored={hasAlreadyScored}
@@ -166,4 +166,4 @@ export default function Home() {
       )}
     </main>
   );
-}
+} 
