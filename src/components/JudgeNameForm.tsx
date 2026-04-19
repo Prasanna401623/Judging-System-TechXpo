@@ -19,6 +19,9 @@ if (process.env.NEXT_PUBLIC_JUDGE2_CODE && process.env.NEXT_PUBLIC_JUDGE2_NAME) 
 if (process.env.NEXT_PUBLIC_JUDGE3_CODE && process.env.NEXT_PUBLIC_JUDGE3_NAME) {
   JUDGE_CODES[process.env.NEXT_PUBLIC_JUDGE3_CODE] = process.env.NEXT_PUBLIC_JUDGE3_NAME;
 }
+if (process.env.NEXT_PUBLIC_JUDGE4_CODE && process.env.NEXT_PUBLIC_JUDGE4_NAME) {
+  JUDGE_CODES[process.env.NEXT_PUBLIC_JUDGE4_CODE] = process.env.NEXT_PUBLIC_JUDGE4_NAME;
+}
 
 export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
   const [code, setCode] = useState('');
