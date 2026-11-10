@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -8,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Hawkathon 2026 Judging System",
+  title: "TechXpo 2026 Judging System",
   description: "Judging system for GDSC ULM events",
   icons: {
     icon: "/favicon.png",
@@ -30,6 +31,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.variable} font-sans antialiased min-h-screen bg-background`}>
         {children}
+        <Footer />
       </body>
     </html>
   );

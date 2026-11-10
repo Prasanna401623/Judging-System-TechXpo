@@ -1,4 +1,4 @@
-# Hawkathon Judging System
+# TechXpo 2026 Judging System
 
 A web-based judging system for hackathon events, built with Next.js, TailwindCSS, and Firebase Realtime Database.
 
@@ -22,7 +22,7 @@ A web-based judging system for hackathon events, built with Next.js, TailwindCSS
 1. Clone the repository:
 ```bash
 git clone <repository-url>
-cd hawkathon-judging
+cd techxpo-judging
 ```
 
 2. Install dependencies:

@@ -130,7 +130,7 @@ export default function LeaderboardPage() {
       <div className="max-w-4xl mx-auto mt-20">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl text-center">🏆 Hawkathon 2026 Leaderboard</CardTitle>
+            <CardTitle className="text-3xl text-center">🏆 TechXpo 2026 Leaderboard</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

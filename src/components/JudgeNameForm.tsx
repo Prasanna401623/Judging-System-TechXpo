@@ -42,7 +42,7 @@ export function JudgeNameForm({ onSubmit }: JudgeNameFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto mt-4 bg-white shadow-xl shadow-blue-900/5 ring-1 ring-gray-900/5 rounded-2xl overflow-hidden">
       <CardHeader className="bg-gray-50/50 border-b border-gray-100 pb-6">
-        <CardTitle>Welcome to Hawkathon 2026 Judging</CardTitle>
+        <CardTitle>Welcome to TechXpo 2026 Judging</CardTitle>
         <CardDescription>Please enter your judge code to begin judging</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit}>
