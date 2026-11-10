@@ -24,11 +24,11 @@ export interface JudgingFormData {
 }
 
 export const CRITERIA = {
-  ProblemRelevance: "Problem Relevance & User Value (max 20)",
-  NoveltyDifferentiation: "Novelty & Differentiation (max 20)",
-  TechnicalDepth: "Technical Difficulty & Depth (max 20)",
-  ImplementationQuality: "Implementation Quality, Security & Responsible AI (max 20)",
-  DemoTeamComm: "Demo & Team Communication (max 20)",
+  NoveltyDifferentiation: "Innovation and Creativity (max 20)",
+  ImplementationQuality: "Security and Technical Implementation (max 20)",
+  ProblemRelevance: "Relevance and Impact (max 20)",
+  DemoTeamComm: "Presentation and Clarity (max 20)",
+  TechnicalDepth: "Documentation and Research (max 20)",
 } as const;
 
 export const MAX_SCORES = {
