@@ -14,11 +14,13 @@ export interface Submission {
   judgeName: string;
   teamName: string;
   scores: Score;
+  feedback?: string;
   timestamp: number;
 }
 
 export interface JudgingFormData extends Score {
   teamName: string;
+  feedback?: string;
 }
 
 export interface RubricLevel {

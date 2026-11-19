@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { ref, onValue, push, remove, get } from 'firebase/database';
 import { Toaster, toast } from 'sonner';
 import { db } from '@/lib/firebase';
@@ -275,7 +275,8 @@ export default function AdminPage() {
                           {teamSubmissions.map((submission) => {
                             const total = totalScore(submission.scores);
                             return (
-                              <tr key={submission.id} className="hover:bg-gray-50">
+                              <Fragment key={submission.id}>
+                              <tr className="hover:bg-gray-50">
                                 <td className="border p-2 font-medium">{submission.judgeName}</td>
                                 {Object.keys(CRITERIA).map((key) => (
                                   <td key={key} className="border p-2 text-center">
@@ -293,6 +294,14 @@ export default function AdminPage() {
                                   </Button>
                                 </td>
                               </tr>
+                              {submission.feedback && (
+                                <tr>
+                                  <td colSpan={Object.keys(CRITERIA).length + 3} className="border p-2 text-gray-700 whitespace-pre-wrap">
+                                    <span className="font-semibold">Feedback:</span> {submission.feedback}
+                                  </td>
+                                </tr>
+                              )}
+                              </Fragment>
                             );
                           })}
                           {/* Average Row */}

@@ -61,6 +61,7 @@ export default function Home() {
             ProblemSolving: getScore(scores, 'ProblemSolving'),
             CreativityWowFactor: getScore(scores, 'CreativityWowFactor'),
             PresentationSkills: getScore(scores, 'PresentationSkills'),
+            feedback: (submissionData as Submission).feedback ?? '',
           }
         });
         setHasAlreadyScored(true);
@@ -113,6 +114,7 @@ export default function Home() {
           CreativityWowFactor: data.CreativityWowFactor,
           PresentationSkills: data.PresentationSkills,
         },
+        feedback: (data.feedback ?? '').trim(),
         timestamp: Date.now(),
       };
 
@@ -144,10 +146,10 @@ export default function Home() {
       <Toaster position="top-center" />
       {!judgeName ? (
         <div className="flex flex-col items-center">
-          <div className="w-64 h-64 relative mb-8 mt-8">
+          <div className="w-80 h-44 max-w-full relative mb-8 mt-8">
             <Image
-              src="/assets/TechXpo.png"
-              alt="Protothon 2026 Logo"
+              src="/assets/gwc-ulm-logo.png"
+              alt="Girls Who Code - University of Louisiana at Monroe"
               fill
               style={{ objectFit: 'contain' }}
               priority

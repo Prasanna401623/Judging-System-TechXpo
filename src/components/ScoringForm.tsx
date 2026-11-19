@@ -11,7 +11,6 @@ import {
   MIN_SCORE,
   MAX_SCORES,
   MAX_TOTAL_SCORE,
-  PRESENTATION_TIME,
   CRITERIA_KEYS,
   totalScore as sumScores,
   type JudgingFormData,
@@ -29,11 +28,13 @@ const formSchema = z.object({
   ProblemSolving: scoreField(MAX_SCORES.ProblemSolving),
   CreativityWowFactor: scoreField(MAX_SCORES.CreativityWowFactor),
   PresentationSkills: scoreField(MAX_SCORES.PresentationSkills),
+  feedback: z.string().max(2000, 'Feedback must be 2000 characters or fewer').optional(),
 });
 
 const emptyForm = (): JudgingFormData =>
   ({
     teamName: '',
+    feedback: '',
     ...Object.fromEntries(CRITERIA_KEYS.map((key) => [key, '' as any])),
   }) as JudgingFormData;
 
@@ -97,9 +98,6 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
         <CardDescription className="mt-2 font-medium">
           Total Score: {totalScore}/{MAX_TOTAL_SCORE} points
         </CardDescription>
-        <CardDescription className="mt-1">
-          Target time: {PRESENTATION_TIME.presentationMinutes} minutes per presentation, plus {PRESENTATION_TIME.questionMinutes} minutes for questions.
-        </CardDescription>
       </CardHeader>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -140,7 +138,6 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
                 name={criterion.key}
                 render={({ field }) => {
                   const selected = Number(field.value) || 0;
-                  const selectedLevel = criterion.levels.find((level) => level.score === selected);
                   return (
                     <FormItem>
                       <FormLabel className="flex justify-between text-base">
@@ -180,20 +177,34 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
                             })}
                         </div>
                       </FormControl>
-                      {selectedLevel && (
-                        <div className="rounded-lg bg-blue-50 p-3 text-sm text-gray-700">
-                          <p className="font-semibold">
-                            {selectedLevel.score} ({selectedLevel.rating}): {selectedLevel.title}
-                          </p>
-                          <p className="mt-1">{selectedLevel.explanation}</p>
-                        </div>
-                      )}
                       <FormMessage />
                     </FormItem>
                   );
                 }}
               />
             ))}
+
+            <FormField
+              control={form.control}
+              name="feedback"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-base">Feedback (optional)</FormLabel>
+                  <FormControl>
+                    <textarea
+                      {...field}
+                      value={field.value ?? ''}
+                      rows={4}
+                      maxLength={2000}
+                      disabled={hasAlreadyScored}
+                      placeholder="Share comments or suggestions for this team..."
+                      className="w-full rounded-xl border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:opacity-60"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </CardContent>
           <CardFooter className="flex flex-col gap-4">
             {hasAlreadyScored && (
@@ -202,7 +213,7 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
               </div>
             )}
             <div className="text-sm text-muted-foreground">
-              Tap a score in each category. The full rubric description for your choice appears below it.
+              Tap a score in each category, then add any feedback for the team.
             </div>
             <Button
               type="submit"
