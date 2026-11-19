@@ -7,21 +7,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Navigation } from '@/components/Navigation';
 import { AdminLoginForm } from '@/components/AdminLoginForm';
 import { useAdmin } from '@/hooks/useAdmin';
-import type { Submission } from '@/types';
-import { MAX_SCORES } from '@/types';
+import type { Score, Submission } from '@/types';
+import { CRITERIA_KEYS, MAX_TOTAL_SCORE, emptyScores, getScore, totalScore } from '@/types';
 
 interface TeamScores {
   [teamName: string]: {
     totalScore: number;
     averageScore: number;
     judgeCount: number;
-    scores: {
-      ProblemRelevance: number;
-      NoveltyDifferentiation: number;
-      TechnicalDepth: number;
-      ImplementationQuality: number;
-      DemoTeamComm: number;
-    };
+    scores: Score;
   };
 }
 
@@ -67,30 +61,15 @@ export default function LeaderboardPage() {
             totalScore: 0,
             averageScore: 0,
             judgeCount: 0,
-            scores: {
-              ProblemRelevance: 0,
-              NoveltyDifferentiation: 0,
-              TechnicalDepth: 0,
-              ImplementationQuality: 0,
-              DemoTeamComm: 0,
-            },
+            scores: emptyScores(),
           };
         }
 
         scores[teamName].judgeCount++;
-        scores[teamName].scores.ProblemRelevance += submissionScores.ProblemRelevance;
-        scores[teamName].scores.NoveltyDifferentiation += submissionScores.NoveltyDifferentiation;
-        scores[teamName].scores.TechnicalDepth += submissionScores.TechnicalDepth;
-        scores[teamName].scores.ImplementationQuality += submissionScores.ImplementationQuality;
-        scores[teamName].scores.DemoTeamComm += submissionScores.DemoTeamComm;
-
-        const total =
-          submissionScores.ProblemRelevance +
-          submissionScores.NoveltyDifferentiation +
-          submissionScores.TechnicalDepth +
-          submissionScores.ImplementationQuality +
-          submissionScores.DemoTeamComm;
-        scores[teamName].totalScore += total;
+        CRITERIA_KEYS.forEach((key) => {
+          scores[teamName].scores[key] += getScore(submissionScores, key);
+        });
+        scores[teamName].totalScore += totalScore(submissionScores);
       });
 
       // Calculate average scores after all submissions are processed
@@ -108,7 +87,7 @@ export default function LeaderboardPage() {
     };
   }, [isAdmin]);
 
-  const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
+  const maxTotalScore = MAX_TOTAL_SCORE;
 
   if (isLoading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -130,7 +109,7 @@ export default function LeaderboardPage() {
       <div className="max-w-4xl mx-auto mt-20">
         <Card>
           <CardHeader>
-            <CardTitle className="text-3xl text-center">🏆 TechXpo 2026 Leaderboard</CardTitle>
+            <CardTitle className="text-3xl text-center">🏆 Protothon 2026 Leaderboard</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">

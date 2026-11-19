@@ -1,12 +1,13 @@
-# TechXpo 2026 Judging System
+# Protothon 2026 Judging System
 
-A web-based judging system for hackathon events, built with Next.js, TailwindCSS, and Firebase Realtime Database.
+A web-based judging system for Girls Who Code (GWC) Protothon 2026, a project showcase event, built with Next.js, TailwindCSS, and Firebase Realtime Database.
 
 ## Features
 
 - Judge identification with local storage persistence
 - Team selection from a dropdown
-- Scoring based on multiple criteria (Innovation, UI/UX, Technical Complexity)
+- Scoring with the Protothon 2026 Official Judging Rubric: Problem Solving, Creativity & Wow Factor, and Presentation Skills, each scored 1 to 5 (15 points total)
+- Target time of 5 minutes per presentation plus 3 minutes for questions
 - Duplicate submission prevention
 - Real-time data storage with Firebase
 - Responsive design optimized for tablets
@@ -50,9 +51,9 @@ npm run dev
 
 ## Usage
 
-1. Enter your name when first accessing the application
+1. Enter your judge code when first accessing the application
 2. Select a team from the dropdown
-3. Score the team on various criteria (0-10)
+3. Score the team from 1 to 5 in each of the three rubric categories
 4. Submit the scores
 5. Repeat for other teams
 
@@ -62,15 +63,19 @@ npm run dev
 {
   "submissions": {
     "$submissionId": {
+      "judgeCode": "string",
       "judgeName": "string",
       "teamName": "string",
       "scores": {
-        "Innovation": number,
-        "UI_UX": number,
-        "Technical": number
+        "ProblemSolving": number,
+        "CreativityWowFactor": number,
+        "PresentationSkills": number
       },
       "timestamp": number
     }
+  },
+  "teams": {
+    "$teamId": "string"
   }
 }
 ```

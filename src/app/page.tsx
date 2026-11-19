@@ -9,6 +9,7 @@ import { JudgeNameForm } from '@/components/JudgeNameForm';
 import { ScoringForm } from '@/components/ScoringForm';
 import { Navigation } from '@/components/Navigation';
 import type { JudgingFormData, Submission } from '@/types';
+import { getScore } from '@/types';
 import Image from 'next/image';
 
 export default function Home() {
@@ -57,7 +58,9 @@ export default function Home() {
           id: submissionId,
           data: {
             teamName,
-            ...scores
+            ProblemSolving: getScore(scores, 'ProblemSolving'),
+            CreativityWowFactor: getScore(scores, 'CreativityWowFactor'),
+            PresentationSkills: getScore(scores, 'PresentationSkills'),
           }
         });
         setHasAlreadyScored(true);
@@ -106,11 +109,9 @@ export default function Home() {
         judgeName,
         teamName: data.teamName,
         scores: {
-          ProblemRelevance: data.ProblemRelevance,
-          NoveltyDifferentiation: data.NoveltyDifferentiation,
-          TechnicalDepth: data.TechnicalDepth,
-          ImplementationQuality: data.ImplementationQuality,
-          DemoTeamComm: data.DemoTeamComm,
+          ProblemSolving: data.ProblemSolving,
+          CreativityWowFactor: data.CreativityWowFactor,
+          PresentationSkills: data.PresentationSkills,
         },
         timestamp: Date.now(),
       };
@@ -146,7 +147,7 @@ export default function Home() {
           <div className="w-64 h-64 relative mb-8 mt-8">
             <Image
               src="/assets/TechXpo.png"
-              alt="TechXpo 2026 Logo"
+              alt="Protothon 2026 Logo"
               fill
               style={{ objectFit: 'contain' }}
               priority

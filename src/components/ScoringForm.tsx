@@ -4,19 +4,38 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { CRITERIA, MAX_SCORES, type JudgingFormData } from '@/types';
+import {
+  RUBRIC,
+  MIN_SCORE,
+  MAX_SCORES,
+  MAX_TOTAL_SCORE,
+  PRESENTATION_TIME,
+  CRITERIA_KEYS,
+  totalScore as sumScores,
+  type JudgingFormData,
+} from '@/types';
+
+const scoreField = (max: number) =>
+  z.coerce
+    .number({ required_error: 'Score is required', invalid_type_error: 'Score is required' })
+    .int('Score must be a whole number')
+    .min(MIN_SCORE, 'Please choose a score')
+    .max(max, `Maximum score is ${max}`);
 
 const formSchema = z.object({
   teamName: z.string().min(1, 'Please select a team'),
-  ProblemRelevance: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  NoveltyDifferentiation: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  TechnicalDepth: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  ImplementationQuality: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
-  DemoTeamComm: z.coerce.number({ required_error: 'Score is required', invalid_type_error: 'Score is required' }).min(0, 'Minimum score is 0').max(20, 'Maximum score is 20'),
+  ProblemSolving: scoreField(MAX_SCORES.ProblemSolving),
+  CreativityWowFactor: scoreField(MAX_SCORES.CreativityWowFactor),
+  PresentationSkills: scoreField(MAX_SCORES.PresentationSkills),
 });
+
+const emptyForm = (): JudgingFormData =>
+  ({
+    teamName: '',
+    ...Object.fromEntries(CRITERIA_KEYS.map((key) => [key, '' as any])),
+  }) as JudgingFormData;
 
 interface ScoringFormProps {
   onSubmit: (data: JudgingFormData) => Promise<{ success: boolean } | void>;
@@ -30,14 +49,7 @@ interface ScoringFormProps {
 export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existingSubmission, hasAlreadyScored }: ScoringFormProps) {
   const form = useForm<JudgingFormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      teamName: '',
-      ProblemRelevance: '' as any,
-      NoveltyDifferentiation: '' as any,
-      TechnicalDepth: '' as any,
-      ImplementationQuality: '' as any,
-      DemoTeamComm: '' as any,
-    },
+    defaultValues: emptyForm(),
   });
 
   useEffect(() => {
@@ -45,14 +57,7 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
       form.reset(existingSubmission);
     } else {
       // Reset to empty form when existingSubmission is null
-      form.reset({
-        teamName: '',
-        ProblemRelevance: '' as any,
-        NoveltyDifferentiation: '' as any,
-        TechnicalDepth: '' as any,
-        ImplementationQuality: '' as any,
-        DemoTeamComm: '' as any,
-      });
+      form.reset(emptyForm());
     }
   }, [existingSubmission, form]);
 
@@ -61,14 +66,7 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
       const result = await onSubmit(data);
       // Only reset the form if submission was successful
       if (result?.success) {
-        form.reset({
-          teamName: '',
-          ProblemRelevance: '' as any,
-          NoveltyDifferentiation: '' as any,
-          TechnicalDepth: '' as any,
-          ImplementationQuality: '' as any,
-          DemoTeamComm: '' as any,
-        });
+        form.reset(emptyForm());
         // Trigger team select with empty string to reset the scored state
         await onTeamSelect('');
       }
@@ -85,10 +83,7 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
 
   // Calculate total score
   const values = form.watch();
-  const totalScore = Object.entries(values)
-    .filter(([key]) => key !== 'teamName')
-    .reduce((sum, [key, value]) => sum + (typeof value === 'number' ? value : 0), 0);
-  const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
+  const totalScore = sumScores(values);
 
   return (
     <Card className="w-full max-w-3xl mx-auto mt-4 bg-white shadow-xl shadow-blue-900/5 ring-1 ring-gray-900/5 rounded-2xl overflow-hidden">
@@ -100,7 +95,10 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
           </CardDescription>
         </div>
         <CardDescription className="mt-2 font-medium">
-          Total Score: {totalScore}/{maxTotalScore} points
+          Total Score: {totalScore}/{MAX_TOTAL_SCORE} points
+        </CardDescription>
+        <CardDescription className="mt-1">
+          Target time: {PRESENTATION_TIME.presentationMinutes} minutes per presentation, plus {PRESENTATION_TIME.questionMinutes} minutes for questions.
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -135,31 +133,65 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
               )}
             />
 
-            {Object.entries(CRITERIA).map(([key, label]) => (
+            {RUBRIC.map((criterion, index) => (
               <FormField
-                key={key}
+                key={criterion.key}
                 control={form.control}
-                name={key as keyof JudgingFormData}
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex justify-between">
-                      <span>{label}</span>
-                      <span className="text-muted-foreground">
-                        {field.value}/{MAX_SCORES[key as keyof typeof MAX_SCORES]} points
-                      </span>
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={MAX_SCORES[key as keyof typeof MAX_SCORES]}
-                        className="h-14 md:h-16 text-lg md:text-xl rounded-xl"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                name={criterion.key}
+                render={({ field }) => {
+                  const selected = Number(field.value) || 0;
+                  const selectedLevel = criterion.levels.find((level) => level.score === selected);
+                  return (
+                    <FormItem>
+                      <FormLabel className="flex justify-between text-base">
+                        <span>
+                          {index + 1}. {criterion.label}
+                        </span>
+                        <span className="text-muted-foreground">
+                          {selected || '-'}/{criterion.max} points
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <div className="grid grid-cols-5 gap-2" role="radiogroup" aria-label={criterion.label}>
+                          {[...criterion.levels]
+                            .sort((a, b) => a.score - b.score)
+                            .map((level) => {
+                              const isSelected = selected === level.score;
+                              return (
+                                <button
+                                  key={level.score}
+                                  type="button"
+                                  role="radio"
+                                  aria-checked={isSelected}
+                                  disabled={hasAlreadyScored}
+                                  onClick={() => field.onChange(level.score)}
+                                  className={`flex flex-col items-center justify-center rounded-xl border-2 px-1 py-3 transition-colors disabled:opacity-60 ${
+                                    isSelected
+                                      ? 'border-blue-600 bg-blue-600 text-white'
+                                      : 'border-gray-200 bg-white hover:border-blue-300'
+                                  }`}
+                                >
+                                  <span className="text-2xl font-bold">{level.score}</span>
+                                  <span className={`text-[11px] leading-tight text-center ${isSelected ? 'text-blue-50' : 'text-muted-foreground'}`}>
+                                    {level.title}
+                                  </span>
+                                </button>
+                              );
+                            })}
+                        </div>
+                      </FormControl>
+                      {selectedLevel && (
+                        <div className="rounded-lg bg-blue-50 p-3 text-sm text-gray-700">
+                          <p className="font-semibold">
+                            {selectedLevel.score} ({selectedLevel.rating}): {selectedLevel.title}
+                          </p>
+                          <p className="mt-1">{selectedLevel.explanation}</p>
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
               />
             ))}
           </CardContent>
@@ -170,10 +202,10 @@ export function ScoringForm({ onSubmit, onTeamSelect, judgeName, teams, existing
               </div>
             )}
             <div className="text-sm text-muted-foreground">
-              Make sure your scores reflect the quality of the project in each category.
+              Tap a score in each category. The full rubric description for your choice appears below it.
             </div>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full h-16 md:h-20 text-xl font-bold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all rounded-xl"
               disabled={hasAlreadyScored}
             >
