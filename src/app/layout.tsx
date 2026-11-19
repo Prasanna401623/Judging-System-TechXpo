@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "TechXpo 2026 Judging System",
-  description: "Judging system for GDSC ULM events",
+  title: "Protothon 2026 Judging System",
+  description: "Judging system for Girls Who Code (GWC) events",
   icons: {
     icon: "/favicon.png",
     apple: "/favicon.png",

@@ -10,21 +10,15 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Navigation } from '@/components/Navigation';
 import { AdminLoginForm } from '@/components/AdminLoginForm';
 import { useAdmin } from '@/hooks/useAdmin';
-import type { Submission } from '@/types';
-import { CRITERIA, MAX_SCORES } from '@/types';
+import type { Score, Submission } from '@/types';
+import { CRITERIA, CRITERIA_KEYS, emptyScores, getScore, totalScore } from '@/types';
 
 interface TeamScores {
   [teamName: string]: {
     totalScore: number;
     averageScore: number;
     judgeCount: number;
-    scores: {
-      ProblemRelevance: number;
-      NoveltyDifferentiation: number;
-      TechnicalDepth: number;
-      ImplementationQuality: number;
-      DemoTeamComm: number;
-    };
+    scores: Score;
   };
 }
 
@@ -83,24 +77,15 @@ export default function AdminPage() {
             totalScore: 0,
             averageScore: 0,
             judgeCount: 0,
-            scores: { ProblemRelevance: 0, NoveltyDifferentiation: 0, TechnicalDepth: 0, ImplementationQuality: 0, DemoTeamComm: 0 },
+            scores: emptyScores(),
           };
         }
 
         scores[teamName].judgeCount++;
-        scores[teamName].scores.ProblemRelevance += submissionScores.ProblemRelevance;
-        scores[teamName].scores.NoveltyDifferentiation += submissionScores.NoveltyDifferentiation;
-        scores[teamName].scores.TechnicalDepth += submissionScores.TechnicalDepth;
-        scores[teamName].scores.ImplementationQuality += submissionScores.ImplementationQuality;
-        scores[teamName].scores.DemoTeamComm += submissionScores.DemoTeamComm;
-
-        const total = 
-          submissionScores.ProblemRelevance + 
-          submissionScores.NoveltyDifferentiation + 
-          submissionScores.TechnicalDepth + 
-          submissionScores.ImplementationQuality + 
-          submissionScores.DemoTeamComm;
-        scores[teamName].totalScore += total;
+        CRITERIA_KEYS.forEach((key) => {
+          scores[teamName].scores[key] += getScore(submissionScores, key);
+        });
+        scores[teamName].totalScore += totalScore(submissionScores);
       });
 
       // Calculate average scores after all submissions are processed
@@ -256,16 +241,9 @@ export default function AdminPage() {
               const scoreData = teamScores[team.name] || {
                 averageScore: 0,
                 judgeCount: 0,
-                scores: {
-                  ProblemRelevance: 0,
-                  NoveltyDifferentiation: 0,
-                  TechnicalDepth: 0,
-                  ImplementationQuality: 0,
-                  DemoTeamComm: 0,
-                },
+                scores: emptyScores(),
               };
 
-              const maxTotalScore = Object.values(MAX_SCORES).reduce((sum, value) => sum + value, 0);
               const teamSubmissions = allSubmissions.filter(sub => sub.teamName === team.name);
 
               return (
@@ -295,13 +273,13 @@ export default function AdminPage() {
                         </thead>
                         <tbody>
                           {teamSubmissions.map((submission) => {
-                            const total = Object.values(submission.scores).reduce((sum, val) => sum + val, 0);
+                            const total = totalScore(submission.scores);
                             return (
                               <tr key={submission.id} className="hover:bg-gray-50">
                                 <td className="border p-2 font-medium">{submission.judgeName}</td>
                                 {Object.keys(CRITERIA).map((key) => (
                                   <td key={key} className="border p-2 text-center">
-                                    {submission.scores[key as keyof typeof submission.scores]}
+                                    {getScore(submission.scores, key as keyof Score)}
                                   </td>
                                 ))}
                                 <td className="border p-2 text-center font-semibold">{total}</td>
